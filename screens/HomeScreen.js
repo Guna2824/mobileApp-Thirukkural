@@ -1,6 +1,8 @@
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import * as Speech from 'expo-speech'
 
 import story from './thirukkural.json';
 
@@ -8,6 +10,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
   const [search, setSearch] = useState(null)
+  const [tell, setTell] = useState(false)
 
   const searchItem = story.filter((item)=> (item.Line1 && item.Line2).includes(search) || item.Number === Number(search))
 
@@ -17,7 +20,14 @@ const HomeScreen = () => {
      });
      setSearch(null)
   };
-  
+
+  const speech =(words, id)=>{
+      Speech.speak(words,{
+        rate:1,
+        onStart:(()=>setTell(id)),
+        onDone:(()=>setTell(null))
+      })
+    }
 
   const renderItem = ({ item }) => {
     return (
@@ -25,9 +35,15 @@ const HomeScreen = () => {
         <Text style={styles.kuralText}>{item.Line1}</Text>
         <Text style={styles.kuralText}>{item.Line2}</Text>
         <Text style={styles.numberText}>குறள்: {item.Number}</Text>
+        <View style={styles.row}>
         <TouchableOpacity style={styles.button} onPress={() => pressed(item)}>
           <Text style={styles.buttonText}>விளக்கம்</Text>
         </TouchableOpacity>
+        <TouchableOpacity>
+          <AntDesign onPress={()=>speech(item.Line1 + item.Line2, item.Number)} name="caretright" size={24} color="purple" />
+        </TouchableOpacity>
+        {tell === item.Number ? <ActivityIndicator color='green' size={25} /> : null}
+        </View>
       </View>
     );
   };
@@ -99,5 +115,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: 'white'
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
 });

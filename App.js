@@ -32,7 +32,7 @@ export default function App() {
             })} 
           />
         </Stack.Navigator>
-        <StatusBar style="light" backgroundColor="tomato" />
+        <StatusBar style="auto" backgroundColor="white" />
       </NavigationContainer>
   );
 }
